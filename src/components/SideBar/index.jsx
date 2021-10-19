@@ -3,80 +3,161 @@ import PropTypes from 'prop-types';
 import './style.scss';
 
 SideBar.propTypes = {
-    currentDay: PropTypes.object
+    currentDay: PropTypes.object,
+    onClickToggle: PropTypes.func,
+    toggleState: PropTypes.string,
+    imageUrl: PropTypes.string,
+    onSubmit: PropTypes.func,
+    locationList: PropTypes.array,
+    onChosenLocation: PropTypes.func
 };
 
 SideBar.defaultProps = {
-    currentDay: null
+    currentDay: null,
+    onClickToggle: null,
+    toggleState: '',
+    imageUrl: '',
+    onSubmit: null,
+    locationList: null,
+    onChosenLocation: null
 };
 
 function SideBar(props) {
-    const { currentDay } = props;
-    const [abbreviation, setAbbreviation] = useState({});
+    const {
+        currentDay,
+        onClickToggle,
+        toggleState,
+        imageUrl,
+        onSubmit,
+        locationList,
+        onChosenLocation } = props;
 
-    console.log(currentDay.weather_state_abbr);
-    useEffect(() => {
-        async function fetchWeatherImage() {
-            try {
-                const requestUrl =
-                    `https://cors-anywhere.herokuapp.com/https://www.metaweather.com/static/img/weather/png/${currentDay.weather_state_abbr}.png`;
-                const response = await fetch(requestUrl);
-                const responseJSON = await response.blob();
+    const [location, setLocation] = useState('');
 
-                const imageObjectURL = URL.createObjectURL(responseJSON);
-                setAbbreviation(imageObjectURL);
+    function handleClickToggle() {
+        if (onClickToggle !== null) {
+            if (toggleState === 'SideBar') {
+                onClickToggle('Search');
             }
-            catch (error) {
-                console.log(error);
+            else if (toggleState === 'Search') {
+                onClickToggle('SideBar');
             }
         }
-        fetchWeatherImage();
-    }, []);
+    }
 
+    function handleChange(e) {
+        setLocation(e.target.value);
+    }
+
+    function handleSubmit() {
+        if (onSubmit !== null) {
+            onSubmit(location);
+        }
+    }
+
+
+    function handleChooseLocation(woeid) {
+        if (onChosenLocation !== null) {
+            onChosenLocation(woeid);
+        }
+    }
 
     return (
         <div className="sideBar">
-            <div className="sideBar-nav">
-                <div className="sideBar-nav-search">
-                    <button>Search for places</button>
+            {
+                toggleState === 'SideBar' &&
+                <div className="sideBar-current">
+                    <div className="sideBar-current-nav">
+                        <div className="sideBar-current-nav-search">
+                            <button onClick={handleClickToggle}>
+                                Search for places
+                            </button>
+                        </div>
+                        <div className="sideBar-current-nav-location">
+                            <button>
+                                <span className="material-icons">
+                                    my_location
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div className="sideBar-current-content">
+                        <div className="sideBar-current-content-abbreviation">
+                            <img
+                                src={`${imageUrl}${currentDay.weather_state_abbr}.svg`}
+                                alt="abbreviation" />
+                        </div>
+                        <div className="sideBar-current-content-background">
+                            <div>
+                                <span class="material-icons">cloud</span>
+                                <span class="material-icons">cloud</span>
+                            </div>
+                            <div>
+                                <span class="material-icons">cloud</span>
+                                <span class="material-icons">cloud</span>
+                            </div>
+                        </div>
+                        <div className="sideBar-current-content-temperature">
+                            {Math.round(currentDay.the_temp)}
+                            <span>°C</span>
+                        </div>
+                        <div className="sideBar-current-content-state">
+                            {currentDay.weather_state_name}
+                        </div>
+                        <div className="sideBar-current-content-date">
+                            Today - {currentDay.applicable_date}
+                        </div>
+                        <div className="sideBar-current-content-location">
+                            <span className="material-icons">
+                                location_on
+                            </span>
+                            <span className="sideBar-current-content-location-text">
+                                {currentDay.title}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div className="sideBar-nav-location">
-                    <button>
-                        <span className="material-icons">
-                            my_location
-                        </span>
-                    </button>
+            }
+            {
+                toggleState === 'Search' &&
+                <div className="sideBar-search">
+                    <div className="sideBar-search-nav">
+                        <span
+                            className="material-icons"
+                            onClick={handleClickToggle}>close</span>
+                    </div>
+                    <div className="sideBar-search-box">
+                        <div className="sideBar-search-box-input">
+                            <span className="material-icons">search</span>
+                            <input
+                                type="text"
+                                placeholder="search location"
+                                value={location}
+                                onChange={(e) => handleChange(e)} />
+                        </div>
+                        <div className="sideBar-search-box-button">
+                            <button onClick={handleSubmit}>Search</button>
+                        </div>
+                    </div>
+                    {
+                        locationList !== null &&
+                        <div className="sideBar-search-list">
+                            {
+                                locationList.map((item) => (
+                                    <div
+                                        className="sideBar-search-list-item"
+                                        onClick={() => handleChooseLocation(item.woeid)}>
+                                        <span>{item.title}</span>
+                                        <span class="material-icons">chevron_right</span>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    }
                 </div>
-            </div>
-            <div className="sideBar-content">
-                <div className="sideBar-content-abbreviation">
-                    <img src={abbreviation} alt="abbreviation" />
-                </div>
-                <div className="sideBar-content-background">
-                    <span class="material-icons">cloud</span>
-                    <span class="material-icons">cloud</span>
-                    <span class="material-icons">cloud</span>
-                    <span class="material-icons">cloud</span>
-                </div>
-                <div className="sideBar-content-temperature">
-                    {Math.round(currentDay.the_temp)}°C
-                </div>
-                <div className="sideBar-content-state">
-                    {currentDay.weather_state_name}
-                </div>
-                <div className="sideBar-content-date">
-                    Today - {currentDay.applicable_date}
-                </div>
-                <div className="sideBar-content-location">
-                    <span className="material-icons">
-                        location_on
-                    </span>
-                    <span className="sideBar-content-location-text">
-                        {currentDay.title}
-                    </span>
-                </div>
-            </div>
+            }
         </div>
+
     );
 }
 

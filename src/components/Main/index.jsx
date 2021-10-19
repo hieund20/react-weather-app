@@ -1,27 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './style.scss';
 
 Main.propTypes = {
-    currentDay: PropTypes.object
+    currentDay: PropTypes.object,
+    tomorrow: PropTypes.object,
+    nextDays: PropTypes.array,
+    imageUrl: PropTypes.string,
+    onConvertToFahrenheit: PropTypes.func
 };
 
 Main.defaultProps = {
-    currentDay: null
+    currentDay: null,
+    tomorrow: null,
+    nextDays: null,
+    imageUrl: '',
+    onConvertToFahrenheit: null
 };
 
 function Main(props) {
-    const { currentDay } = props;
+    const { currentDay, tomorrow, nextDays, imageUrl, onConvertToFahrenheit } = props;
 
+    function handleConvertToFahrenheit() {
+        if (onConvertToFahrenheit !== null) {
+            onConvertToFahrenheit();
+        }
+    }
 
     return (
         <div className="main">
             <div className="main-nav">
-                <div className="main-nav-celsius">
-                    <button>°C</button>
-                </div>
-                <div className="main-nav-fahrenheit">
-                    <button>°F</button>
+                <div className="main-nav-container">
+                    <div className="main-nav-container-celsius">
+                        <button>°C</button>
+                    </div>
+                    <div className="main-nav-container-fahrenheit">
+                        <button onClick={handleConvertToFahrenheit}>°F</button>
+                    </div>
                 </div>
             </div>
             <div className="main-forecast">
@@ -30,104 +45,72 @@ function Main(props) {
                         Tomorrow
                     </span>
                     <div className="main-forecast-card-abbreviation">
-                        <img />
+                        <img
+                            src={`${imageUrl}${tomorrow.weather_state_abbr}.svg`}
+                            alt="abbreviations" />
                     </div>
                     <div className="main-forecast-card-temperature">
                         <span className="main-forecast-card-temperature-max">
-                            {Math.round(currentDay.max_temp)}°C
+                            {Math.round(tomorrow.max_temp)}°C
                         </span>
                         <span className="main-forecast-card-temperature-min">
-                            {Math.round(currentDay.min_temp)}°C
+                            {Math.round(tomorrow.min_temp)}°C
                         </span>
                     </div>
                 </div>
-                <div className="main-forecast-card">
-                    <span className="main-forecast-card-title">
-                        Tomorrow
-                    </span>
-                    <div className="main-forecast-card-abbreviation">
-                        <img />
-                    </div>
-                    <div className="main-forecast-card-temperature">
-                        <span className="main-forecast-card-temperature-max">
-                            {Math.round(currentDay.max_temp)}°C
-                        </span>
-                        <span className="main-forecast-card-temperature-min">
-                            {Math.round(currentDay.min_temp)}°C
-                        </span>
-                    </div>
-                </div>
-                <div className="main-forecast-card">
-                    <span className="main-forecast-card-title">
-                        Tomorrow
-                    </span>
-                    <div className="main-forecast-card-abbreviation">
-                        <img />
-                    </div>
-                    <div className="main-forecast-card-temperature">
-                        <span className="main-forecast-card-temperature-max">
-                            {Math.round(currentDay.max_temp)}°C
-                        </span>
-                        <span className="main-forecast-card-temperature-min">
-                            {Math.round(currentDay.min_temp)}°C
-                        </span>
-                    </div>
-                </div>
-                <div className="main-forecast-card">
-                    <span className="main-forecast-card-title">
-                        Tomorrow
-                    </span>
-                    <div className="main-forecast-card-abbreviation">
-                        <img />
-                    </div>
-                    <div className="main-forecast-card-temperature">
-                        <span className="main-forecast-card-temperature-max">
-                            {Math.round(currentDay.max_temp)}°C
-                        </span>
-                        <span className="main-forecast-card-temperature-min">
-                            {Math.round(currentDay.min_temp)}°C
-                        </span>
-                    </div>
-                </div>
-                <div className="main-forecast-card">
-                    <span className="main-forecast-card-title">
-                        Tomorrow
-                    </span>
-                    <div className="main-forecast-card-abbreviation">
-                        <img />
-                    </div>
-                    <div className="main-forecast-card-temperature">
-                        <span className="main-forecast-card-temperature-max">
-                            {Math.round(currentDay.max_temp)}°C
-                        </span>
-                        <span className="main-forecast-card-temperature-min">
-                            {Math.round(currentDay.min_temp)}°C
-                        </span>
-                    </div>
-                </div>
+                {
+                    nextDays.map((nextDay) => (
+                        <div className="main-forecast-card">
+                            <span className="main-forecast-card-title">
+                                {nextDay.applicable_date}
+                            </span>
+                            <div className="main-forecast-card-abbreviation">
+                                <img
+                                    src={`${imageUrl}${nextDay.weather_state_abbr}.svg`}
+                                    alt="abbreviations" />
+                            </div>
+                            <div className="main-forecast-card-temperature">
+                                <span className="main-forecast-card-temperature-max">
+                                    {Math.round(nextDay.max_temp)}°C
+                                </span>
+                                <span className="main-forecast-card-temperature-min">
+                                    {Math.round(nextDay.min_temp)}°C
+                                </span>
+                            </div>
+                        </div>
+                    ))
+                }
             </div>
 
-            <span className="main-highlight-topic">Today's Highlights</span>
+            <div className="main-highlight-topic">
+                <span>Today's Highlights</span>
+            </div>
 
             <div className="main-highlight-top">
                 <div className="main-highlight-top-card">
                     <span className="main-highlight-top-card-title">Wind status</span>
                     <div className="main-highlight-top-card-wind">
-                        <span className="main-highlight-top-card-wind-speed">7</span>
+                        <span className="main-highlight-top-card-wind-speed">
+                            {Math.round(currentDay.wind_speed)}
+                        </span>
                         <span className="main-highlight-top-card-wind-unit">mph</span>
                     </div>
                     <div className="main-highlight-top-card-direction">
                         <button className="main-highlight-top-card-direction-icon">
                             <span class="material-icons">near_me</span>
                         </button>
-                        <span className="main-highlight-top-card-direction-content">WSW</span>
+                        <span className="main-highlight-top-card-direction-content">
+                            {currentDay.wind_direction_compass}
+                        </span>
                     </div>
                 </div>
 
                 <div className="main-highlight-top-card">
                     <span className="main-highlight-top-card-title">Humidity</span>
                     <div className="main-highlight-top-card-humidity">
-                        <span className="main-highlight-top-card-humidity-content">7</span>
+                        <span className="main-highlight-top-card-humidity-content">
+                            {Math.round(currentDay.humidity)}
+                        </span>
                         <span className="main-highlight-top-card-humidity-unit">%</span>
                     </div>
                     <div className="main-highlight-top-card-bar">
@@ -136,7 +119,7 @@ function Main(props) {
                             <span>50</span>
                             <span>100</span>
                         </div>
-                        <progress value="32" max="100"></progress>
+                        <progress value={Math.round(currentDay.humidity)} max="100"></progress>
                         <span className="main-highlight-top-card-bar-unit">%</span>
                     </div>
                 </div>
@@ -145,7 +128,9 @@ function Main(props) {
                 <div className="main-highlight-bottom-card">
                     <span className="main-highlight-bottom-card-title">Visibility</span>
                     <div className="main-highlight-bottom-card-visibility">
-                        <span className="main-highlight-bottom-card-visibility-content">7</span>
+                        <span className="main-highlight-bottom-card-visibility-content">
+                            {(Math.round(currentDay.visibility * 100) / 100).toFixed(1)}
+                        </span>
                         <span className="main-highlight-bottom-card-visibility-unit">miles</span>
                     </div>
                 </div>
@@ -153,12 +138,14 @@ function Main(props) {
                 <div className="main-highlight-bottom-card">
                     <span className="main-highlight-bottom-card-title">Air Pressure</span>
                     <div className="main-highlight-bottom-card-air">
-                        <span className="main-highlight-bottom-card-air-content">7</span>
+                        <span className="main-highlight-bottom-card-air-content">
+                            {Math.round(currentDay.air_pressure)}
+                        </span>
                         <span className="main-highlight-bottom-card-air-unit">mb</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
