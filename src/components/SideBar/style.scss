@@ -160,10 +160,10 @@
         }
     }
     &-search {
+        padding-top: 2rem;
         &-nav {
             width: 80%;
             margin: 0 auto;
-            margin-top: 2rem;
             display: flex;
             justify-content: flex-end;
             & > .material-icons {
