@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './style.scss';
+import moment from 'moment';
 
 SideBar.propTypes = {
     currentDay: PropTypes.object,
@@ -105,7 +106,7 @@ function SideBar(props) {
                             {currentDay.weather_state_name}
                         </div>
                         <div className="sideBar-current-content-date">
-                            Today - {currentDay.applicable_date}
+                            Today - {moment(currentDay.applicable_date).format("dddd, DD MMM")}
                         </div>
                         <div className="sideBar-current-content-location">
                             <span className="material-icons">

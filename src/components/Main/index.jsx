@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './style.scss';
+import moment from 'moment';
 
 Main.propTypes = {
     currentDay: PropTypes.object,
     tomorrow: PropTypes.object,
     nextDays: PropTypes.array,
     imageUrl: PropTypes.string,
-    onConvertToFahrenheit: PropTypes.func
+    onConvertTemperature: PropTypes.func
 };
 
 Main.defaultProps = {
@@ -15,15 +16,15 @@ Main.defaultProps = {
     tomorrow: null,
     nextDays: null,
     imageUrl: '',
-    onConvertToFahrenheit: null
+    onConvertTemperature: null
 };
 
 function Main(props) {
-    const { currentDay, tomorrow, nextDays, imageUrl, onConvertToFahrenheit } = props;
+    const { currentDay, tomorrow, nextDays, imageUrl, onConvertTemperature } = props;
 
-    function handleConvertToFahrenheit() {
-        if (onConvertToFahrenheit !== null) {
-            onConvertToFahrenheit();
+    function handleConvertTemperature(tempState) {
+        if (onConvertTemperature !== null) {
+            onConvertTemperature(tempState);
         }
     }
 
@@ -32,10 +33,10 @@ function Main(props) {
             <div className="main-nav">
                 <div className="main-nav-container">
                     <div className="main-nav-container-celsius">
-                        <button>°C</button>
+                        <button onClick={() => handleConvertTemperature('C')}>°C</button>
                     </div>
                     <div className="main-nav-container-fahrenheit">
-                        <button onClick={handleConvertToFahrenheit}>°F</button>
+                        <button onClick={() => handleConvertTemperature('F')}>°F</button>
                     </div>
                 </div>
             </div>
@@ -62,7 +63,7 @@ function Main(props) {
                     nextDays.map((nextDay) => (
                         <div className="main-forecast-card">
                             <span className="main-forecast-card-title">
-                                {nextDay.applicable_date}
+                                {moment(nextDay.applicable_date).format("dddd, DD MMM")}
                             </span>
                             <div className="main-forecast-card-abbreviation">
                                 <img
@@ -96,8 +97,9 @@ function Main(props) {
                         <span className="main-highlight-top-card-wind-unit">mph</span>
                     </div>
                     <div className="main-highlight-top-card-direction">
-                        <button className="main-highlight-top-card-direction-icon">
-                            <span class="material-icons">near_me</span>
+                        <button
+                            className={`main-highlight-top-card-direction-icon ${currentDay.wind_direction_compass}`}>
+                            <span className="material-icons">near_me</span>
                         </button>
                         <span className="main-highlight-top-card-direction-content">
                             {currentDay.wind_direction_compass}

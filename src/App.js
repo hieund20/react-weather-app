@@ -11,6 +11,7 @@ function App() {
   const [toggleState, setToggleState] = useState('SideBar');
   const [locations, setLocations] = useState('');
   const [locationList, setLocationList] = useState([]);
+  const [temperatureState, setTemperatureState] = useState('C');
   const imageUrl = "https://www.metaweather.com/static/img/weather/";
 
   useEffect(() => {
@@ -108,6 +109,47 @@ function App() {
     setCurrentWoeid(woeid);
   }
 
+  useEffect((tempState) => {
+    handleConvertTemperature(tempState);
+  }, [temperatureState]);
+
+
+  function handleConvertTemperature(tempState) {
+    if (tempState === 'F') {
+      setTemperatureState('F');
+      currentDay.the_temp = ToFahrenheit(currentDay.the_temp);
+      tomorrow.max_temp = ToFahrenheit(tomorrow.max_temp);
+      tomorrow.min_temp = ToFahrenheit(tomorrow.min_temp);
+
+      nextDays.forEach(nextDay => {
+        nextDay.min_temp = ToFahrenheit(nextDay.min_temp);
+        nextDay.max_temp = ToFahrenheit(nextDay.max_temp);
+      });
+      return;
+    }
+    if (tempState === 'C') {
+      setTemperatureState('C');
+      currentDay.the_temp = ToCelsius(currentDay.the_temp);
+      tomorrow.max_temp = ToCelsius(tomorrow.max_temp);
+      tomorrow.min_temp = ToCelsius(tomorrow.min_temp);
+
+      nextDays.forEach(nextDay => {
+        nextDay.min_temp = ToCelsius(nextDay.min_temp);
+        nextDay.max_temp = ToCelsius(nextDay.max_temp);
+      });
+    }
+  }
+  //bug: when click again temp this still handle
+
+  function ToFahrenheit(pram) {
+    return (pram * 9 / 5) + 32;
+  }
+
+  function ToCelsius(pram) {
+    return (pram - 32) * 5 / 9;
+  }
+
+
   return (
     <div className="app">
       <SideBar
@@ -118,12 +160,14 @@ function App() {
         onSubmit={handleSearchLocation}
         locationList={locationList}
         onChosenLocation={handleChosenLocation}
+        on
       />
       <Main
         currentDay={currentDay}
         tomorrow={tomorrow}
         nextDays={nextDays}
         imageUrl={imageUrl}
+        onConvertTemperature={(tempState) => handleConvertTemperature(tempState)}
       />
     </div>
   );

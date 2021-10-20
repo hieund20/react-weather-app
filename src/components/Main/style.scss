@@ -75,6 +75,7 @@
             &-title {
                 display: inline-block;
                 margin-top: 18px;
+                font-size: 13px;
             }
             &-abbreviation {
                 width: 50px;
@@ -149,7 +150,7 @@
                     }
                 }
                 &-direction {
-                    width: 26%;
+                    width: 40%;
                     margin: 0 auto;
                     margin-top: 9px;
                     text-align: center;
@@ -163,7 +164,84 @@
                         & > .material-icons {
                             color: #e7e7eb;
                             position: relative;
+                            top: 0.06rem;
+                            left: 0.1rem;
                             font-size: 18px;
+                        }
+                        &.NNE {
+                            & > .material-icons {
+                                transform: rotate(22.5deg);
+                            }
+                        }
+                        &.NE {
+                            & > .material-icons {
+                                transform: rotate(67.5deg);
+                            }
+                        }
+                        &.ENE {
+                            & > .material-icons {
+                                transform: rotate(45deg);
+                            }
+                        }
+                        &.E {
+                            & > .material-icons {
+                                transform: rotate(90deg);
+                            }
+                        }
+                        &.ESE {
+                            & > .material-icons {
+                                transform: rotate(112.5deg);
+                            }
+                        }
+                        &.SE {
+                            & > .material-icons {
+                                transform: rotate(135deg);
+                            }
+                        }
+                        &.SSE {
+                            & > .material-icons {
+                                transform: rotate(157.5deg);
+                            }
+                        }
+                        &.S {
+                            & > .material-icons {
+                                transform: rotate(180deg);
+                            }
+                        }
+                        &.SSW {
+                            & > .material-icons {
+                                transform: rotate(202.5deg);
+                            }
+                        }
+                        &.SW {
+                            & > .material-icons {
+                                transform: rotate(-135deg);
+                            }
+                        }
+                        &.WSW {
+                            & > .material-icons {
+                                transform: rotate(-114.5deg);
+                            }
+                        }
+                        &.W {
+                            & > .material-icons {
+                                transform: rotate(-90deg);
+                            }
+                        }
+                        &.WNW {
+                            & > .material-icons {
+                                transform: rotate(-69.5deg);
+                            }
+                        }
+                        &.NW {
+                            & > .material-icons {
+                                transform: rotate(-45deg);
+                            }
+                        }
+                        &.NNW {
+                            & > .material-icons {
+                                transform: rotate(-24.5deg);
+                            }
                         }
                     }
                     &-content {
@@ -286,14 +364,10 @@
     .main {
         width: 100%;
         &-nav {
-            width: 80%;
-            &-container {
-                width: 24%;
-                margin-left: auto;
-                margin-right: auto;
-            }
+            display: none;
         }
         &-forecast {
+            margin-top: 4rem;
             width: 80%;
             &-card {
                 width: 46%;
