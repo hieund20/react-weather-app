@@ -111,6 +111,7 @@ function App() {
 
   useEffect((tempState) => {
     handleConvertTemperature(tempState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [temperatureState]);
 
 
