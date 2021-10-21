@@ -106,6 +106,7 @@ function App() {
   }
 
   function handleChosenLocation(woeid) {
+    console.log(woeid);
     setCurrentWoeid(woeid);
   }
 
@@ -161,7 +162,6 @@ function App() {
         onSubmit={handleSearchLocation}
         locationList={locationList}
         onChosenLocation={handleChosenLocation}
-        on
       />
       <Main
         currentDay={currentDay}

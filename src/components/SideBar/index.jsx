@@ -10,7 +10,7 @@ SideBar.propTypes = {
     imageUrl: PropTypes.string,
     onSubmit: PropTypes.func,
     locationList: PropTypes.array,
-    onChosenLocation: PropTypes.func
+    onChosenLocation: PropTypes.func,
 };
 
 SideBar.defaultProps = {
@@ -20,7 +20,7 @@ SideBar.defaultProps = {
     imageUrl: '',
     onSubmit: null,
     locationList: null,
-    onChosenLocation: null
+    onChosenLocation: null,
 };
 
 function SideBar(props) {
@@ -31,7 +31,8 @@ function SideBar(props) {
         imageUrl,
         onSubmit,
         locationList,
-        onChosenLocation } = props;
+        onChosenLocation,
+    } = props;
 
     const [location, setLocation] = useState('');
 
@@ -56,9 +57,10 @@ function SideBar(props) {
         }
     }
 
-
     function handleChooseLocation(woeid) {
+        console.log(woeid);
         if (onChosenLocation !== null) {
+            console.log(woeid);
             onChosenLocation(woeid);
         }
     }
@@ -75,7 +77,7 @@ function SideBar(props) {
                             </button>
                         </div>
                         <div className="sideBar-current-nav-location">
-                            <button>
+                            <button onClick={() => handleChooseLocation('1236594')}>
                                 <span className="material-icons">
                                     my_location
                                 </span>
