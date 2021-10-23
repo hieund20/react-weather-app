@@ -1,95 +1,70 @@
 import { useEffect, useState } from 'react';
 import './App.scss';
+
+import getDataByLatLong from './apis/getDataByLatLong';
+import getDataByWoeid from './apis/getDataByWoeid';
+import getDataByCityName from './apis/getDataByCityName';
+
+import { ToCelsius, ToFahrenheit } from './utils/convertTemp';
+
 import Main from './components/Main';
 import SideBar from './components/SideBar';
 
+
+
 function App() {
   const [currentWoeid, setCurrentWoeid] = useState('565346');
-  const [currentDay, setCurrentDay] = useState({});
+  const [currentLocation, setCurrentLocation] = useState({});
+  const [currentDay, setCurrentDay] = useState({
+    the_temp: 0,
+    abbr: '',
+    humidity: 0,
+    wind_speed: 0,
+    wind_direction: '',
+    air_pressure: 0,
+    visibility: 0
+  });
   const [nextDays, setNextDays] = useState([]);
-  const [tomorrow, setTomorrow] = useState({});
+
   const [toggleState, setToggleState] = useState('SideBar');
   const [locations, setLocations] = useState('');
   const [locationList, setLocationList] = useState([]);
+
   const [temperatureState, setTemperatureState] = useState('C');
   const imageUrl = "https://www.metaweather.com/static/img/weather/";
 
-  useEffect(() => {
-    async function fetchWeatherForecast() {
-      try {
-        const requestUrl =
-          `https://the-ultimate-api-challenge.herokuapp.com/https://www.metaweather.com/api/location/${currentWoeid}/`;
-        const response = await fetch(requestUrl);
-        const responseJSON = await response.json();
-        setCurrentDay({
-          min_temp: responseJSON.consolidated_weather[0].min_temp,
-          max_temp: responseJSON.consolidated_weather[0].max_temp,
-          the_temp: responseJSON.consolidated_weather[0].the_temp,
-          weather_state_name: responseJSON.consolidated_weather[0].weather_state_name,
-          applicable_date: responseJSON.consolidated_weather[0].applicable_date,
-          title: responseJSON.title,
-          weather_state_abbr: responseJSON.consolidated_weather[0].weather_state_abbr,
-          wind_speed: responseJSON.consolidated_weather[0].wind_speed,
-          humidity: responseJSON.consolidated_weather[0].humidity,
-          visibility: responseJSON.consolidated_weather[0].visibility,
-          air_pressure: responseJSON.consolidated_weather[0].air_pressure,
-          wind_direction_compass: responseJSON.consolidated_weather[0].wind_direction_compass
-        });
-        setTomorrow({
-          applicable_date: responseJSON.consolidated_weather[1].applicable_date,
-          weather_state_abbr: responseJSON.consolidated_weather[1].weather_state_abbr,
-          min_temp: responseJSON.consolidated_weather[1].min_temp,
-          max_temp: responseJSON.consolidated_weather[1].max_temp,
-        })
-        setNextDays([
-          {
-            applicable_date: responseJSON.consolidated_weather[2].applicable_date,
-            weather_state_abbr: responseJSON.consolidated_weather[2].weather_state_abbr,
-            min_temp: responseJSON.consolidated_weather[2].min_temp,
-            max_temp: responseJSON.consolidated_weather[2].max_temp,
-          },
-          {
-            applicable_date: responseJSON.consolidated_weather[3].applicable_date,
-            weather_state_abbr: responseJSON.consolidated_weather[3].weather_state_abbr,
-            min_temp: responseJSON.consolidated_weather[3].min_temp,
-            max_temp: responseJSON.consolidated_weather[3].max_temp,
-          },
-          {
-            applicable_date: responseJSON.consolidated_weather[4].applicable_date,
-            weather_state_abbr: responseJSON.consolidated_weather[4].weather_state_abbr,
-            min_temp: responseJSON.consolidated_weather[4].min_temp,
-            max_temp: responseJSON.consolidated_weather[4].max_temp,
-          },
-          {
-            applicable_date: responseJSON.consolidated_weather[5].applicable_date,
-            weather_state_abbr: responseJSON.consolidated_weather[5].weather_state_abbr,
-            min_temp: responseJSON.consolidated_weather[5].min_temp,
-            max_temp: responseJSON.consolidated_weather[5].max_temp,
-          }
-        ])
-      }
-      catch (error) {
-        console.log(error);
-      }
-    }
-    fetchWeatherForecast();
-  }, [currentWoeid]);
 
   useEffect(() => {
-    async function fetchLocation() {
-      try {
-        const requestUrl =
-          `https://the-ultimate-api-challenge.herokuapp.com/https://www.metaweather.com/api/location/search/?query=${locations}`;
-        const response = await fetch(requestUrl);
-        const responseJSON = await response.json();
-        setLocationList(responseJSON);
-      }
-      catch (error) {
+    getDataByWoeid(currentWoeid)
+      .then((res) => {
+        setCurrentDay({
+          ...res.data,
+          the_temp: res.data.consolidated_weather[0].the_temp,
+          abbr: res.data.consolidated_weather[0].weather_state_abbr,
+          humidity: res.data.consolidated_weather[0].humidity,
+          wind_speed: res.data.consolidated_weather[0].wind_speed,
+          wind_direction: res.data.consolidated_weather[0].wind_direction_compass,
+          air_pressure: res.data.consolidated_weather[0].air_pressure,
+          visibility: res.data.consolidated_weather[0].visibility
+        });
+        setNextDays(res.data.consolidated_weather);
+      })
+      .catch((error) => {
         console.log(error);
-      }
-    };
-    fetchLocation();
+      })
+  }, [currentWoeid]);
+
+
+  useEffect(() => {
+    getDataByCityName(locations)
+      .then((res) => {
+        setLocationList(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }, [locations]);
+
 
   function handleClickToggle(mode) {
     if (mode === 'Search') {
@@ -106,8 +81,8 @@ function App() {
   }
 
   function handleChosenLocation(woeid) {
-    console.log(woeid);
     setCurrentWoeid(woeid);
+    setTemperatureState('C');
   }
 
   useEffect((tempState) => {
@@ -115,41 +90,45 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [temperatureState]);
 
-
+  //bug: when click again temp this still handle
   function handleConvertTemperature(tempState) {
-    if (tempState === 'F') {
-      setTemperatureState('F');
+    if (tempState === 'F' && temperatureState === 'C') {
       currentDay.the_temp = ToFahrenheit(currentDay.the_temp);
-      tomorrow.max_temp = ToFahrenheit(tomorrow.max_temp);
-      tomorrow.min_temp = ToFahrenheit(tomorrow.min_temp);
-
-      nextDays.forEach(nextDay => {
+      nextDays.slice(1).forEach(nextDay => {
         nextDay.min_temp = ToFahrenheit(nextDay.min_temp);
         nextDay.max_temp = ToFahrenheit(nextDay.max_temp);
       });
+      setTemperatureState('F');
       return;
     }
-    if (tempState === 'C') {
-      setTemperatureState('C');
-      currentDay.the_temp = ToCelsius(currentDay.the_temp);
-      tomorrow.max_temp = ToCelsius(tomorrow.max_temp);
-      tomorrow.min_temp = ToCelsius(tomorrow.min_temp);
+    if (tempState === 'C' && temperatureState === 'F') {
 
-      nextDays.forEach(nextDay => {
+      currentDay.the_temp = ToCelsius(currentDay.the_temp);
+      nextDays.slice(1).forEach(nextDay => {
         nextDay.min_temp = ToCelsius(nextDay.min_temp);
         nextDay.max_temp = ToCelsius(nextDay.max_temp);
       });
+      setTemperatureState('C');
     }
   }
-  //bug: when click again temp this still handle
 
-  function ToFahrenheit(pram) {
-    return (pram * 9 / 5) + 32;
+  function handleGetCurrentLocation() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setCurrentLocation({
+        lat: position.coords.latitude,
+        long: position.coords.longitude
+      })
+    });
+    setTemperatureState('C');
   }
 
-  function ToCelsius(pram) {
-    return (pram - 32) * 5 / 9;
-  }
+  useEffect(() => {
+    getDataByLatLong(currentLocation.lat, currentLocation.long)
+      .then((res) => setCurrentWoeid(res.data[0].woeid))
+      .catch((error) => {
+        console.log(error);
+      })
+  }, [currentLocation]);
 
 
   return (
@@ -162,13 +141,15 @@ function App() {
         onSubmit={handleSearchLocation}
         locationList={locationList}
         onChosenLocation={handleChosenLocation}
+        onCurrentLocation={handleGetCurrentLocation}
+        temperatureState={temperatureState}
       />
       <Main
         currentDay={currentDay}
-        tomorrow={tomorrow}
         nextDays={nextDays}
         imageUrl={imageUrl}
         onConvertTemperature={(tempState) => handleConvertTemperature(tempState)}
+        temperatureState={temperatureState}
       />
     </div>
   );

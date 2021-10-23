@@ -11,6 +11,8 @@ SideBar.propTypes = {
     onSubmit: PropTypes.func,
     locationList: PropTypes.array,
     onChosenLocation: PropTypes.func,
+    onCurrentLocation: PropTypes.func,
+    temperatureState: PropTypes.string
 };
 
 SideBar.defaultProps = {
@@ -21,6 +23,8 @@ SideBar.defaultProps = {
     onSubmit: null,
     locationList: null,
     onChosenLocation: null,
+    onCurrentLocation: null,
+    temperatureState: ''
 };
 
 function SideBar(props) {
@@ -32,9 +36,14 @@ function SideBar(props) {
         onSubmit,
         locationList,
         onChosenLocation,
+        onCurrentLocation,
+        temperatureState
     } = props;
-
     const [location, setLocation] = useState('');
+
+    // const abbr = currentDay.consolidated_weather[0].weather_state_abbr;
+    // const temp = currentDay.consolidated_weather[0].the_temp;
+
 
     function handleClickToggle() {
         if (onClickToggle !== null) {
@@ -54,15 +63,22 @@ function SideBar(props) {
     function handleSubmit() {
         if (onSubmit !== null) {
             onSubmit(location);
+            setLocation('');
         }
     }
 
     function handleChooseLocation(woeid) {
         console.log(woeid);
         if (onChosenLocation !== null) {
-            console.log(woeid);
+            // console.log(woeid);
             onChosenLocation(woeid);
         }
+    }
+
+    //Get current user location
+    function getCurrentLocation() {
+        if (!onCurrentLocation) return;
+        onCurrentLocation();
     }
 
     return (
@@ -77,7 +93,7 @@ function SideBar(props) {
                             </button>
                         </div>
                         <div className="sideBar-current-nav-location">
-                            <button onClick={() => handleChooseLocation('1236594')}>
+                            <button onClick={() => getCurrentLocation()}>
                                 <span className="material-icons">
                                     my_location
                                 </span>
@@ -87,7 +103,7 @@ function SideBar(props) {
                     <div className="sideBar-current-content">
                         <div className="sideBar-current-content-abbreviation">
                             <img
-                                src={`${imageUrl}${currentDay.weather_state_abbr}.svg`}
+                                src={`${imageUrl}${currentDay.abbr}.svg`}
                                 alt="abbreviation" />
                         </div>
                         <div className="sideBar-current-content-background">
@@ -102,7 +118,8 @@ function SideBar(props) {
                         </div>
                         <div className="sideBar-current-content-temperature">
                             {Math.round(currentDay.the_temp)}
-                            <span>°C</span>
+                            {temperatureState === 'F' && <span>°F</span>}
+                            {temperatureState === 'C' && <span>°C</span>}
                         </div>
                         <div className="sideBar-current-content-state">
                             {currentDay.weather_state_name}

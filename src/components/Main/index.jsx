@@ -5,22 +5,27 @@ import moment from 'moment';
 
 Main.propTypes = {
     currentDay: PropTypes.object,
-    tomorrow: PropTypes.object,
     nextDays: PropTypes.array,
     imageUrl: PropTypes.string,
-    onConvertTemperature: PropTypes.func
+    onConvertTemperature: PropTypes.func,
+    temperatureState: PropTypes.string
 };
 
 Main.defaultProps = {
     currentDay: null,
-    tomorrow: null,
     nextDays: null,
     imageUrl: '',
-    onConvertTemperature: null
+    onConvertTemperature: null,
+    temperatureState: ''
 };
 
 function Main(props) {
-    const { currentDay, tomorrow, nextDays, imageUrl, onConvertTemperature } = props;
+    const {
+        currentDay,
+        nextDays,
+        imageUrl,
+        onConvertTemperature,
+        temperatureState } = props;
 
     function handleConvertTemperature(tempState) {
         if (onConvertTemperature !== null) {
@@ -41,26 +46,8 @@ function Main(props) {
                 </div>
             </div>
             <div className="main-forecast">
-                <div className="main-forecast-card">
-                    <span className="main-forecast-card-title">
-                        Tomorrow
-                    </span>
-                    <div className="main-forecast-card-abbreviation">
-                        <img
-                            src={`${imageUrl}${tomorrow.weather_state_abbr}.svg`}
-                            alt="abbreviations" />
-                    </div>
-                    <div className="main-forecast-card-temperature">
-                        <span className="main-forecast-card-temperature-max">
-                            {Math.round(tomorrow.max_temp)}°C
-                        </span>
-                        <span className="main-forecast-card-temperature-min">
-                            {Math.round(tomorrow.min_temp)}°C
-                        </span>
-                    </div>
-                </div>
                 {
-                    nextDays.map((nextDay) => (
+                    nextDays.slice(1).map((nextDay) => (
                         <div className="main-forecast-card">
                             <span className="main-forecast-card-title">
                                 {moment(nextDay.applicable_date).format("dddd, DD MMM")}
@@ -72,10 +59,10 @@ function Main(props) {
                             </div>
                             <div className="main-forecast-card-temperature">
                                 <span className="main-forecast-card-temperature-max">
-                                    {Math.round(nextDay.max_temp)}°C
+                                    {`${Math.round(nextDay.max_temp)}${temperatureState === 'C' ? '°C' : '°F'}`}
                                 </span>
                                 <span className="main-forecast-card-temperature-min">
-                                    {Math.round(nextDay.min_temp)}°C
+                                    {`${Math.round(nextDay.min_temp)}${temperatureState === 'C' ? '°C' : '°F'}`}
                                 </span>
                             </div>
                         </div>
@@ -98,11 +85,11 @@ function Main(props) {
                     </div>
                     <div className="main-highlight-top-card-direction">
                         <button
-                            className={`main-highlight-top-card-direction-icon ${currentDay.wind_direction_compass}`}>
+                            className={`main-highlight-top-card-direction-icon ${currentDay.wind_direction}`}>
                             <span className="material-icons">near_me</span>
                         </button>
                         <span className="main-highlight-top-card-direction-content">
-                            {currentDay.wind_direction_compass}
+                            {currentDay.wind_direction}
                         </span>
                     </div>
                 </div>
