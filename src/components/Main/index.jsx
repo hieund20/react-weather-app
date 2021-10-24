@@ -27,6 +27,9 @@ function Main(props) {
         onConvertTemperature,
         temperatureState } = props;
 
+    //process to show 'Tomorrow' in DOM instead of date format
+    const dateToComparison = nextDays[0] && parseInt(nextDays[0].applicable_date.slice(-2));
+
     function handleConvertTemperature(tempState) {
         if (onConvertTemperature !== null) {
             onConvertTemperature(tempState);
@@ -50,7 +53,11 @@ function Main(props) {
                     nextDays.slice(1).map((nextDay) => (
                         <div className="main-forecast-card">
                             <span className="main-forecast-card-title">
-                                {moment(nextDay.applicable_date).format("dddd, DD MMM")}
+                                {
+                                    parseInt(nextDay.applicable_date.slice(-2)) === dateToComparison + 1 ?
+                                        'Tomorrow' :
+                                        moment(nextDay.applicable_date).format("dddd, DD MMM")
+                                }
                             </span>
                             <div className="main-forecast-card-abbreviation">
                                 <img
