@@ -12,7 +12,7 @@
 
 ```
 # Clone this repository
-git clone https://github.com/hieund20/react-cats-wiki-app.git
+git clone https://github.com/hieund20/react-weather-app.git
 
 # Install dependencies
 npm install
