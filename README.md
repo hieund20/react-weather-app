@@ -24,6 +24,5 @@ npm start
 <h2>Built With</h2>
 <ul>
   <li><a href="https://reactjs.org/">ReactJS</a></li>
-  <li><a href="https://momentjs.com/">Momment.js</a></li>
 </ul>
 
